@@ -10,9 +10,6 @@
 /api/controllers/data
 \api\controllers\data
 
-/api/controllers/h3bins
-\api\controllers\h3bins
-
 # misc
 .DS_Store
 .env.local

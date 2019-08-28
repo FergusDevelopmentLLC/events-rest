@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <title>Events</title>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-JSONP/2.4.0/jquery.jsonp.js" type="text/javascript"></script>
+  <script src="https://momentjs.com/downloads/moment.js" type="text/javascript"></script>
+  <style>
+    #map { height: 100%; }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <script>
+
+    let prev_infowindow =false;
+
+    const getEvents = async (bounds) => {
+      
+      let url = `http://localhost:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2018-12-25/2019-12-31`
+      
+      let events = await $.ajax({
+        url: url
+      })
+
+      return events
+    }
+
+    const getContentFrom = (event) => {
+      return `<div id="content">
+                <h1 id="firstHeading" class="firstHeading">McDonald's ${event.city}</h1>
+                <div id="bodyContent">
+                  <p><img src='${event.venue_image_url}' width='100' /></p>
+                  <p>${event.event_description}</p>
+                  <p>${moment(event.startDate).format("MMM DD, YYYY")}: ${moment(event.startDate).format("h:mm A")} until ${moment(event.endDate).format("h:mm A")}</p>
+                  <p>
+                    ${event.address}</br>
+                    ${event.city}, ${event.state_province} ${event.postal_code ? event.postal_code : ""}
+                  </p>
+                  <p>${event.phone}</p>
+                  <p><a href='${event.event_url}'>Register for event</a></p>
+                </div>
+              </div>`
+    }
+
+    const plotMarkers = async (map) => {
+
+      console.log('plotMarkers')
+
+      let events = await getEvents(map.getBounds())
+
+      let markers = events.map((event, i) => {
+
+        let toolTipContent = getContentFrom(event)
+
+        let infowindow = new google.maps.InfoWindow({ content: toolTipContent })
+
+        let marker = new google.maps.Marker({
+          position: {lat: event.latitude, lng: event.longitude},
+          map: map,
+          title: `McDonald's ${event.city}`
+        })
+
+        marker.addListener('click', () => {
+          if( prev_infowindow ) prev_infowindow.close()
+          prev_infowindow = infowindow
+          infowindow.open(map, marker)
+        })
+        return marker
+      })
+      let markerCluster = new MarkerClusterer(map, markers, { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' })
+
+    } 
+
+    async function initMap() {
+
+      let map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 10,
+        center: { lat: 39.754, lng: -105.008 },
+        minZoom: 9
+      })
+
+      google.maps.event.addListener(map, 'bounds_changed', () => { 
+        plotMarkers(map) 
+      })
+    }
+
+  </script>
+  <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+  </script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXmDsuoKrugv-302U1fRnvGz1d4Bi2HR8&callback=initMap">
+    </script>
+</body>
+
+</html>

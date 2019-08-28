@@ -28,7 +28,7 @@
 
     const getEvents = async (bounds) => {
       
-      let url = `http://localhost:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2018-12-25/2019-12-31`
+      let url = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2018-12-25/2019-12-31`
       
       let events = await $.ajax({
         url: url

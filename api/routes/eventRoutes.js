@@ -6,4 +6,8 @@ module.exports = (app) => {
 
   app.route('/getEvents/:minLng/:minLat/:maxLng/:maxLat/:startDate/:endDate')
     .get(event.getEvents)
+
+  app.route('/testMe')
+    .get(event.testMe)
+    
 }

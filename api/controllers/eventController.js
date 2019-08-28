@@ -48,5 +48,7 @@ exports.testMe = (req, res) => {
   res.header("Access-Control-Allow-Origin", "*")
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
 
-  res.json("hey, it works!")
+  const currentTime = new Date()
+
+  res.json(`hey, it works! The current time is: ${currentTime}`)
 }

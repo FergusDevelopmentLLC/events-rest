@@ -27,9 +27,35 @@
     let prev_infowindow =false;
 
     const getEvents = async (bounds) => {
+
+      // let startDate
+      // let endDate
+      // let url
+
+      // var urlParams = new URLSearchParams(window.location.search)
+      // let entries = urlParams.entries()
+
+      // if(entries) {
+      //   console.log(entries)
+      //   for(pair of entries) { 
+      //     if(pair[0] == 'startDate' || pair[0] == 'endDate') {
+      //       console.log(pair[0], pair[1]); 
+      //       if(pair[0] == 'startDate') {
+      //         startDate = pair[1]
+      //       }
+      //       if(pair[0] == 'endDate') {
+      //         endDate = pair[1]
+      //       }
+      //     }
+      //   }
+      //   url = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/${startDate}/${endDate}`
+      // }
+      // else {
+      //   url = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2019-01-01/2019-12-31`
+      // }
       
-      let url = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2018-12-25/2019-12-31`
-      
+      url = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2019-01-01/2019-12-31`
+
       let events = await $.ajax({
         url: url
       })

@@ -42,13 +42,23 @@
                 <h1 id="firstHeading" class="firstHeading">McDonald's ${event.city}</h1>
                 <div id="bodyContent">
                   <p><img src='${event.venue_image_url}' width='100' /></p>
-                  <p>${event.event_description}</p>
-                  <p>${moment(event.startDate).format("MMM DD, YYYY")}: ${moment(event.startDate).format("h:mm A")} until ${moment(event.endDate).format("h:mm A")}</p>
                   <p>
+                    <strong>Description:</strong><br/>
+                    ${event.event_description}
+                  </p>
+                  <p>
+                    <strong>Date/Time:</strong><br/>
+                    ${moment(event.startDate).format("MMM DD, YYYY")}: ${moment(event.startDate).format("h:mm A")} until ${moment(event.endDate).format("h:mm A")}
+                  </p>
+                  <p>
+                    <strong>Address:</strong><br/>
                     ${event.address}</br>
                     ${event.city}, ${event.state_province} ${event.postal_code ? event.postal_code : ""}
                   </p>
-                  <p>${event.phone}</p>
+                  <p>
+                    <strong>Phone:</strong><br/>
+                    ${event.phone}
+                  </p>
                   <p><a href='${event.event_url}'>Register for event</a></p>
                 </div>
               </div>`

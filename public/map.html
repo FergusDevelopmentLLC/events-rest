@@ -24,7 +24,7 @@
   <div id="map"></div>
   <script>
 
-    let prev_infowindow =false;
+    let prev_infowindow = false
 
     const getEvents = async (bounds) => {
 
@@ -54,10 +54,20 @@
       //   url = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2019-01-01/2019-12-31`
       // }
       
-      url = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2019-01-01/2019-12-31`
+      let url = new URL(window.location.href)
+      
+      let targetUrl
+      if (url.searchParams.get('startDate') && url.searchParams.get('endDate')) {
+        let sDate = url.searchParams.get('startDate')
+        let eDate = url.searchParams.get('endDate')
+        targetUrl = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/${sDate}/${eDate}`
+      }
+      else {
+        targetUrl = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2019-01-01/2019-12-31`
+      }
 
       let events = await $.ajax({
-        url: url
+        url: targetUrl
       })
 
       return events
@@ -92,8 +102,6 @@
 
     const plotMarkers = async (map) => {
 
-      console.log('plotMarkers')
-
       let events = await getEvents(map.getBounds())
 
       let markers = events.map((event, i) => {
@@ -115,8 +123,8 @@
         })
         return marker
       })
-      let markerCluster = new MarkerClusterer(map, markers, { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' })
 
+      let markerCluster = new MarkerClusterer(map, markers, { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' })
     } 
 
     async function initMap() {
@@ -130,14 +138,13 @@
       google.maps.event.addListener(map, 'bounds_changed', () => { 
         plotMarkers(map) 
       })
+
     }
 
   </script>
-  <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
-  </script>
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXmDsuoKrugv-302U1fRnvGz1d4Bi2HR8&callback=initMap">
-    </script>
-</body>
 
+  <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXmDsuoKrugv-302U1fRnvGz1d4Bi2HR8&callback=initMap"></script>
+
+</body>
 </html>

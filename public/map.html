@@ -5,11 +5,15 @@
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
   <meta charset="utf-8">
   <title>Events</title>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-JSONP/2.4.0/jquery.jsonp.js" type="text/javascript"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-JSONP/2.4.0/jquery.jsonp.js"
+    type="text/javascript"></script>
   <script src="https://momentjs.com/downloads/moment.js" type="text/javascript"></script>
   <style>
-    #map { height: 100%; }
+    #map {
+      height: 100%;
+    }
 
     html,
     body {
@@ -26,34 +30,16 @@
 
     let prev_infowindow = false
 
+    const chicago = { name: "Chicago", lat: 41.85, lng: -87.65 }
+    const tampa = { name: "Tampa", lat: 27.95, lng: -82.45 }
+    const denver = { name: "Denver", lat: 39.752790, lng: -104.999614 }
+    const nyc = { name: "New York City", lat: 40.713019, lng: -74.006509 }
+    const san_diego = { name: "San Diego", lat: 32.8242404, lng: -117.3891578 }
+
+    const minZoom = 10
+
     const getEvents = async (bounds) => {
 
-      // let startDate
-      // let endDate
-      // let url
-
-      // var urlParams = new URLSearchParams(window.location.search)
-      // let entries = urlParams.entries()
-
-      // if(entries) {
-      //   console.log(entries)
-      //   for(pair of entries) { 
-      //     if(pair[0] == 'startDate' || pair[0] == 'endDate') {
-      //       console.log(pair[0], pair[1]); 
-      //       if(pair[0] == 'startDate') {
-      //         startDate = pair[1]
-      //       }
-      //       if(pair[0] == 'endDate') {
-      //         endDate = pair[1]
-      //       }
-      //     }
-      //   }
-      //   url = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/${startDate}/${endDate}`
-      // }
-      // else {
-      //   url = `http://104.236.16.91:8680/getEvents/${bounds.da.g}/${bounds.ha.g}/${bounds.da.h}/${bounds.ha.h}/2019-01-01/2019-12-31`
-      // }
-      
       let url = new URL(window.location.href)
       
       let targetUrl
@@ -75,7 +61,7 @@
 
     const getContentFrom = (event) => {
       return `<div id="content">
-                <h1 id="firstHeading" class="firstHeading">McDonald's ${event.city}</h1>
+                <h1 id="firstHeading" class="firstHeading">McDonald's - ${event.address} ${event.city}, ${event.state_province}</h1>
                 <div id="bodyContent">
                   <p><img src='${event.venue_image_url}' width='100' /></p>
                   <p>
@@ -100,7 +86,7 @@
               </div>`
     }
 
-    function CenterControl(controlDiv, map) {
+    function CenterControl(controlDiv, target, map) {
 
       // Set CSS for the control border.
       var controlUI = document.createElement('div');
@@ -111,7 +97,7 @@
       controlUI.style.cursor = 'pointer';
       controlUI.style.marginBottom = '22px';
       controlUI.style.textAlign = 'center';
-      controlUI.title = 'Click to recenter the map';
+      controlUI.title = `Click to pan map to ${target.name}.`
       controlDiv.appendChild(controlUI);
 
       // Set CSS for the control interior.
@@ -122,15 +108,22 @@
       controlText.style.lineHeight = '38px';
       controlText.style.paddingLeft = '5px';
       controlText.style.paddingRight = '5px';
-      controlText.innerHTML = 'Center Map';
+      controlText.innerHTML = target.name;
       controlUI.appendChild(controlText);
 
       // Setup the click event listeners: simply set the map to Chicago.
-      controlUI.addEventListener('click', function() {
-        map.setCenter(chicago);
+      controlUI.addEventListener('click', function () {
+        map.setCenter(target)
+        map.setZoom(minZoom)
       });
     }
 
+    const addCityControl = (city, map) => {
+      var div = document.createElement('div')
+      var cityControl = new CenterControl(div, city, map)
+      div.index = 1
+      map.controls[google.maps.ControlPosition.TOP_CENTER].push(div)
+    }
 
     const plotMarkers = async (map) => {
 
@@ -143,13 +136,13 @@
         let infowindow = new google.maps.InfoWindow({ content: toolTipContent })
 
         let marker = new google.maps.Marker({
-          position: {lat: event.latitude, lng: event.longitude},
+          position: { lat: event.latitude, lng: event.longitude },
           map: map,
-          title: `McDonald's ${event.city}`
+          title: `${event.address}, ${event.city}, ${event.state_province}`
         })
 
         marker.addListener('click', () => {
-          if( prev_infowindow ) prev_infowindow.close()
+          if (prev_infowindow) prev_infowindow.close()
           prev_infowindow = infowindow
           infowindow.open(map, marker)
         })
@@ -157,34 +150,40 @@
       })
 
       let markerCluster = new MarkerClusterer(map, markers, { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' })
-    } 
+    }
 
     async function initMap() {
 
       let map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 10,
-        center: { lat: 39.754, lng: -105.008 },
-        minZoom: 9
+        zoom: minZoom,
+        center: denver,
+        minZoom: minZoom
       })
 
-      google.maps.event.addListener(map, 'bounds_changed', () => { 
-        plotMarkers(map) 
+      google.maps.event.addListener(map, 'bounds_changed', () => {
+        plotMarkers(map)
       })
 
-      // Create the DIV to hold the control and call the CenterControl()
-      // constructor passing in this DIV.
-      var centerControlDiv = document.createElement('div');
-      var centerControl = new CenterControl(centerControlDiv, map);
+      addCityControl(san_diego, map)
 
-      centerControlDiv.index = 1;
-      map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+      addCityControl(denver, map)
+
+      addCityControl(chicago, map)
+
+      addCityControl(tampa, map)
+
+      addCityControl(nyc, map)
+      
 
     }
 
   </script>
 
-  <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXmDsuoKrugv-302U1fRnvGz1d4Bi2HR8&callback=initMap"></script>
+  <script
+    src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXmDsuoKrugv-302U1fRnvGz1d4Bi2HR8&callback=initMap"></script>
 
 </body>
+
 </html>

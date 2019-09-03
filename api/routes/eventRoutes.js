@@ -9,5 +9,8 @@ module.exports = (app) => {
 
   app.route('/testMe')
     .get(event.testMe)
+
+  app.route('/hikes')
+    .get(event.getHikes)
     
 }

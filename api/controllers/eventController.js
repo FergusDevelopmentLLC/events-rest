@@ -1,4 +1,5 @@
 const events = require('./data/mcdonalds.json');
+const hikes = require('./data/summer2019hikes.json');
 
 exports.getEvents = (req, res) => {
 
@@ -51,4 +52,14 @@ exports.testMe = (req, res) => {
   const currentTime = new Date()
 
   res.json(`hey, it works! The current time is: ${currentTime}`)
+}
+
+exports.getHikes = (req, res) => {
+
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+
+  let hikesCopy = Object.assign({}, hikes)
+
+  res.json(hikesCopy)
 }

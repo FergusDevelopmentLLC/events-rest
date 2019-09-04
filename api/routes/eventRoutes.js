@@ -4,7 +4,7 @@ module.exports = (app) => {
 
   const event = require('../controllers/eventController')
 
-  app.route('/getEvents/:minLng/:minLat/:maxLng/:maxLat/:startDate/:endDate')
+  app.route('/getEvents/:minLng/:minLat/:maxLng/:maxLat/:start_date/:end_date')
     .get(event.getEvents)
 
   app.route('/testMe')

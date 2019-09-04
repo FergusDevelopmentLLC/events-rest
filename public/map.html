@@ -70,7 +70,7 @@
 
     const getContentFrom = (event) => {
       return `<div id="content">
-                <h1 id="firstHeading" class="firstHeading">McDonald's - ${event.address} ${event.city}, ${event.state_province}</h1>
+                <h1 id="firstHeading" class="firstHeading">${event.name}</h1>
                 <div id="bodyContent">
                   <p><img src='${event.venue_image_url}' width='100' /></p>
                   <p>
@@ -90,7 +90,7 @@
                     <strong>Phone:</strong><br/>
                     ${event.phone}
                   </p>
-                  <p><a href='${event.event_url}'>Register for event</a></p>
+                  <p><a href='${event.event_url}'>Register for event</a><br/>(${event.counter} volunteers committed)</p>
                 </div>
               </div>`
     }

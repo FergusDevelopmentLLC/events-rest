@@ -42,14 +42,18 @@
 
       let url = new URL(window.location.href)
       
+      let urlPrefix = 'http://104.236.16.91:8680/getEvents/' 
+      
+      urlPrefix = 'http://localhost:8680/getEvents/' 
+
       let targetUrl
       if (url.searchParams.get('start_date') && url.searchParams.get('end_date')) {
         let sDate = url.searchParams.get('start_date')
         let eDate = url.searchParams.get('end_date')
-        targetUrl = `http://104.236.16.91:8680/getEvents/${bounds.ja.g}/${bounds.na.g}/${bounds.ja.h}/${bounds.na.h}/${sDate}/${eDate}`
+        targetUrl = `${urlPrefix}${bounds.ja.g}/${bounds.na.g}/${bounds.ja.h}/${bounds.na.h}/${sDate}/${eDate}`
       }
       else {
-        targetUrl = `http://104.236.16.91:8680/getEvents/${bounds.ja.g}/${bounds.na.g}/${bounds.ja.h}/${bounds.na.h}/2019-01-01/2019-12-31`
+        targetUrl = `${urlPrefix}${bounds.ja.g}/${bounds.na.g}/${bounds.ja.h}/${bounds.na.h}/2019-01-01/2019-12-31`
       }
 
       let events = await $.ajax({

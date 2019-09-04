@@ -23,7 +23,9 @@ exports.getEvents = (req, res) => {
 
     delete f.geometry
     delete f.type
-  
+    
+    f.properties.name = `McDonald's - ${f.properties.address} ${f.properties.city}, ${f.properties.state_province}`
+
     if(
       lat >= minLat
       && lat <= maxLat

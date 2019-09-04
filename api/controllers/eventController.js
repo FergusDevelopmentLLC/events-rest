@@ -25,6 +25,7 @@ exports.getEvents = (req, res) => {
     delete f.type
     
     f.properties.name = `McDonald's - ${f.properties.address} ${f.properties.city}, ${f.properties.state_province}`
+    f.properties.counter = `${Math.floor(Math.random() * 10) + 1}/10`
 
     if(
       lat >= minLat

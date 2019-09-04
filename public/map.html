@@ -43,9 +43,9 @@
       let url = new URL(window.location.href)
       
       let targetUrl
-      if (url.searchParams.get('startDate') && url.searchParams.get('endDate')) {
-        let sDate = url.searchParams.get('startDate')
-        let eDate = url.searchParams.get('endDate')
+      if (url.searchParams.get('start_date') && url.searchParams.get('end_date')) {
+        let sDate = url.searchParams.get('start_date')
+        let eDate = url.searchParams.get('end_date')
         targetUrl = `http://104.236.16.91:8680/getEvents/${bounds.ja.g}/${bounds.na.g}/${bounds.ja.h}/${bounds.na.h}/${sDate}/${eDate}`
       }
       else {
@@ -70,7 +70,7 @@
                   </p>
                   <p>
                     <strong>Date/Time:</strong><br/>
-                    ${moment(event.startDate).format("MMM DD, YYYY")}: ${moment(event.startDate).format("h:mm A")} until ${moment(event.endDate).format("h:mm A")}
+                    ${moment(event.start_date).format("MMM DD, YYYY")}: ${moment(event.start_date).format("h:mm A")} until ${moment(event.end_date).format("h:mm A")}
                   </p>
                   <p>
                     <strong>Address:</strong><br/>

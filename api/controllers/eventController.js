@@ -7,8 +7,8 @@ exports.getEvents = (req, res) => {
   let maxLat = parseFloat(req.params.maxLat)
   let minLng = parseFloat(req.params.minLng)
   let maxLng = parseFloat(req.params.maxLng)
-  let startDate = new Date(req.params.startDate)
-  let endDate = new Date(req.params.endDate)
+  let start_date = new Date(req.params.start_date)
+  let end_date = new Date(req.params.end_date)
 
   let eventsCopy = Object.assign({}, events)
   
@@ -18,8 +18,8 @@ exports.getEvents = (req, res) => {
 
     let lat = parseFloat(f.properties.latitude)
     let lng = parseFloat(f.properties.longitude)
-    let sDate = new Date(f.properties.startDate)
-    let eDate = new Date(f.properties.endDate)
+    let sDate = new Date(f.properties.start_date)
+    let eDate = new Date(f.properties.end_date)
 
     delete f.geometry
     delete f.type
@@ -29,8 +29,8 @@ exports.getEvents = (req, res) => {
       && lat <= maxLat
       && lng >= minLng
       && lng <= maxLng
-      && sDate >= startDate
-      && eDate <= endDate
+      && sDate >= start_date
+      && eDate <= end_date
       ) {
       filteredFeatures.push(f.properties)
     }

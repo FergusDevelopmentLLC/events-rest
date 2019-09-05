@@ -1,5 +1,7 @@
 const events = require('./data/mcdonalds.json');
 const hikes = require('./data/summer2019hikes.json');
+const blm = require('./data/mine/BLM_CO_MCA_20190301.json');
+const mines = require('./data/mine/NON_POINT_MINE_PROJECTS.json');
 
 exports.getEvents = (req, res) => {
 
@@ -66,3 +68,24 @@ exports.getHikes = (req, res) => {
 
   res.json(hikesCopy)
 }
+
+exports.getBlm = (req, res) => {
+
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+
+  let blmCopy = Object.assign({}, blm)
+
+  res.json(blmCopy)
+}
+
+exports.getMineProjects = (req, res) => {
+
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+
+  let minesCopy = Object.assign({}, mines)
+
+  res.json(minesCopy)
+}
+

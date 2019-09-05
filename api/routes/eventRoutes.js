@@ -12,5 +12,11 @@ module.exports = (app) => {
 
   app.route('/hikes')
     .get(event.getHikes)
+
+  app.route('/blm')
+    .get(event.getBlm)
+
+  app.route('/mine_projects')
+    .get(event.getMineProjects)
     
 }

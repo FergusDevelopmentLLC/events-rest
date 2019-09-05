@@ -1,6 +1,6 @@
 const events = require('./data/mcdonalds.json');
 const hikes = require('./data/summer2019hikes.json');
-const blm = require('./data/mine/blm2.json');
+const blm = require('./data/mine/blm4.json');
 const mines = require('./data/mine/NON_POINT_MINE_PROJECTS.json');
 
 exports.getEvents = (req, res) => {

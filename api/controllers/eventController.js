@@ -26,8 +26,9 @@ exports.getEvents = (req, res) => {
     delete f.geometry
     delete f.type
     
-    f.properties.name = `McDonald's - ${f.properties.address} ${f.properties.city}, ${f.properties.state_province}`
+    f.properties.name = `McDowell's - ${f.properties.address} ${f.properties.city}, ${f.properties.state_province}`
     f.properties.counter = `${Math.floor(Math.random() * 10) + 1}/10`
+    f.properties.event_description = f.properties.event_description.replace(/McDonald/g, 'McDowell')
 
     if(
       lat >= minLat
@@ -48,6 +49,47 @@ exports.getEvents = (req, res) => {
 
   res.json(eventsCopy.features)
 }
+
+
+exports.getLocationsGeoJson = (req, res) => {
+
+  let minLat = parseFloat(req.params.minLat)
+  let maxLat = parseFloat(req.params.maxLat)
+  let minLng = parseFloat(req.params.minLng)
+  let maxLng = parseFloat(req.params.maxLng)
+
+  let eventsCopy = Object.assign({}, events)
+  eventsCopy.name = "McDowell's"
+  
+  let filteredFeatures = []
+
+  for(f of eventsCopy.features) {
+
+    let lat = parseFloat(f.properties.latitude)
+    let lng = parseFloat(f.properties.longitude)
+
+    f.properties.name = `McDowell's - ${f.properties.address} ${f.properties.city}, ${f.properties.state_province}`
+    f.properties.counter = `${Math.floor(Math.random() * 10) + 1}/10`
+    f.properties.event_description = f.properties.event_description.replace(/McDonald/g, 'McDowell')
+
+    if(
+      lat >= minLat
+      && lat <= maxLat
+      && lng >= minLng
+      && lng <= maxLng
+      ) {
+      filteredFeatures.push(f)
+    }
+  }
+
+  eventsCopy.features = filteredFeatures
+
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+
+  res.json(eventsCopy)
+}
+
 
 exports.testMe = (req, res) => {
 

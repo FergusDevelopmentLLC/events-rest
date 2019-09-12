@@ -21,5 +21,8 @@ module.exports = (app) => {
 
   app.route('/mine_projects')
     .get(event.getMineProjects)
+
+  app.route('/donors')
+    .get(event.getDonors)
     
 }

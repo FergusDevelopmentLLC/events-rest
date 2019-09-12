@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>Donors</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <style>
+    .mapboxgl-popup {
+      max-width: 500px;
+      font: 10px/14px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    }
+  </style>
+  <div id='map'></div>
+  <script>
+
+    // get bounding box: http://bboxfinder.com
+    let mapBounds = [-109.149170, 36.923548, -101.942139, 41.079351];//Southwest corner, Northeast corner
+
+    mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsbGNhcnRlciIsImEiOiJjamV4b2g3Z2ExOGF4MzFwN3R1dHJ3d2J4In0.Ti-hnuBH8W4bHn7k6GCpGw';
+
+    // let basemap = 'basic';
+    let basemap = 'streets';
+    // let basemap = 'bright';
+    // let basemap = 'light';
+    //let basemap = 'dark';
+    // let basemap = 'satellite';
+
+    let map = new mapboxgl.Map({
+      container: 'map',
+      style: `mapbox://styles/mapbox/${basemap}-v9`,
+      center: [(mapBounds[0] + mapBounds[2]) / 2, (mapBounds[1] + mapBounds[3]) / 2],
+      zoom: 7
+    });
+
+    map.on('load', function () {
+
+            map.addSource('donor', {
+                type: 'geojson',
+                data: 'http://localhost:8680/donors'
+            });
+
+            map.addLayer({
+                id: 'donor',
+                source: 'donor',
+                type: 'circle',
+                paint: {
+                    'circle-radius': 5,
+                    'circle-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'Age'],
+                        0, 'blue',
+                        55, 'orange',
+                        85, 'red',
+                    ]
+                }
+            });
+
+            handlePopup();
+
+        });
+
+    handlePopup = () => {
+
+      // Create a popup, but don't add it to the map yet.
+      let popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+
+      map.on('mouseenter', 'donor', (e) => {
+
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+
+        let tooltip_msg = '';
+        tooltip_msg += `<strong>${e.features[0].properties.Donor_Name}</strong><br/>`;
+        tooltip_msg += `Donor_Name: ${e.features[0].properties.Donor_Name}<br/>`
+        tooltip_msg += `Last_Name: ${e.features[0].properties.Last_Name}<br/>`
+        tooltip_msg += `Address_1: ${e.features[0].properties.Address_1}<br/>`
+        tooltip_msg += `Address_2: ${e.features[0].properties.Address_2}<br/>`
+        tooltip_msg += `City: ${e.features[0].properties.City}<br/>`
+        tooltip_msg += `State: ${e.features[0].properties.State}<br/>`
+        tooltip_msg += `Zip: ${e.features[0].properties.Zip}<br/>`
+        tooltip_msg += `County: ${e.features[0].properties.County}<br/>`
+        tooltip_msg += `Email: ${e.features[0].properties.Email}<br/>`
+        tooltip_msg += `Phone: ${e.features[0].properties.Phone}<br/>`
+        tooltip_msg += `Relationship_Manager: ${e.features[0].properties.Relationship_Manager}<br/>`
+        tooltip_msg += `Age: ${e.features[0].properties.Age}<br/>`
+        tooltip_msg += `Planned_Giving_Bequest: ${e.features[0].properties.Planned_Giving_Bequest}<br/>`
+        tooltip_msg += `First_Gift_Date: ${e.features[0].properties.First_Gift_Date}<br/>`
+        tooltip_msg += `First_Gift_Amount: ${e.features[0].properties.First_Gift_Amount}<br/>`
+        tooltip_msg += `Last_Gift_Date: ${e.features[0].properties.Last_Gift_Date}<br/>`
+        tooltip_msg += `Last_Gift_Amount: ${e.features[0].properties.Last_Gift_Amount}<br/>`
+        tooltip_msg += `Last_Gift_Fund_Desc: ${e.features[0].properties.Last_Gift_Fund_Desc}<br/>`
+        tooltip_msg += `Largest_Gift_Date: ${e.features[0].properties.Largest_Gift_Date}<br/>`
+        tooltip_msg += `Largest_Gift_Amount: ${e.features[0].properties.Largest_Gift_Amount}<br/>`
+        tooltip_msg += `Largest_Gift_Fund_Desc: ${e.features[0].properties.Largest_Gift_Fund_Desc}<br/>`
+        tooltip_msg += `Lifetime_Gift_Amount: ${e.features[0].properties.Lifetime_Gift_Amount}<br/>`
+        tooltip_msg += `Lifetime_Gift_Count: ${e.features[0].properties.Lifetime_Gift_Count}<br/>`
+        tooltip_msg += `Current_FY_Gift_Amount: ${e.features[0].properties.Current_FY_Gift_Amount}<br/>`
+        tooltip_msg += `Chapter_Name: ${e.features[0].properties.Chapter_Name}<br/>`
+
+        // Populate the popup and set its coordinates based on the feature found.
+        popup.setLngLat(e.lngLat)
+          .setHTML(tooltip_msg)
+          .addTo(map);
+      });
+
+      map.on('mouseleave', 'donor', function () {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+      });
+
+    }
+
+  </script>
+</body>
+
+</html>

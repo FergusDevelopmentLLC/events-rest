@@ -139,30 +139,15 @@
             0,
             0,
             55,
+            1,
+            85,
             1
           ]
         }
       });
 
-      // [
-      //   "rgb",
-      //   // red is higher when feature.properties.temperature is higher
-      //   ["get", "Age"],
-      //   // green is always zero
-      //   0,
-      //   // blue is higher when feature.properties.temperature is lower
-      //   ["-", 55, ["get", "Age"]]
-      // ]
-
-      // 'circle-color': [
-      //       'interpolate',
-      //       ['linear'],
-      //       ['get', 'Age'],
-      //       40, 'blue',
-      //       55, 'orange',
-      //       85, 'red'
-      //     ]
-
+      map.setFilter('donor-heat', ['>=', 'Age', 55]);
+      
       handlePopup();
 
     });

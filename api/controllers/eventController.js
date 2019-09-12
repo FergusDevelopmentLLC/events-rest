@@ -145,6 +145,15 @@ exports.getDonors = (req, res) => {
     if(!f.properties.Lifetime_Gift_Count) f.properties.Lifetime_Gift_Count = 0
   }
 
+  let copy = []
+
+  for(f of donorsCopy.features) {
+    if(!f.properties.Age == 0)
+      copy.push(f)
+  }
+
+  donorsCopy.features = copy
+
   res.json(donorsCopy)
 }
 

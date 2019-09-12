@@ -34,7 +34,7 @@
   <script>
 
     // get bounding box: http://bboxfinder.com
-    let mapBounds = [-109.149170, 36.923548, -101.942139, 41.079351];//Southwest corner, Northeast corner
+    let mapBounds = [-105.759888,38.621162,-103.573608,40.747257];//Southwest corner, Northeast corner
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsbGNhcnRlciIsImEiOiJjamV4b2g3Z2ExOGF4MzFwN3R1dHJ3d2J4In0.Ti-hnuBH8W4bHn7k6GCpGw';
 
@@ -49,7 +49,7 @@
       container: 'map',
       style: `mapbox://styles/mapbox/${basemap}-v9`,
       center: [(mapBounds[0] + mapBounds[2]) / 2, (mapBounds[1] + mapBounds[3]) / 2],
-      zoom: 7
+      zoom: 9
     });
 
     map.on('load', function () {
@@ -67,9 +67,18 @@
           // increase weight as diameter breast height increases
           'heatmap-weight': {
             property: 'Planned_Giving_Bequest',
-            type: 'exponential',
+            type: 'interval',
             stops: [
-              [87, 0],
+              [0, 0],
+              [10, .1],
+              [20, .2],
+              [30, .3],
+              [40, .4],
+              [50, .5],
+              [60, .6],
+              [70, .7],
+              [80, .8],
+              [90, .9],
               [99, 1]
             ]
           },
@@ -91,23 +100,33 @@
             0.6, 'rgb(103,169,207)',
             0.8, 'rgb(28,144,153)'
           ],
-          // increase radius as zoom increases
+          //increase radius as zoom increases
           'heatmap-radius': {
+            property: 'Planned_Giving_Bequest',
+            type: 'interval',
             stops: [
-              [11, 15],
-              [15, 20]
+              [0, 1],
+              [10, 1],
+              [20, 1],
+              [30, 1],
+              [40, 1],
+              [50, 1],
+              [60, 1],
+              [70, 1],
+              [80, 1],
+              [90, 15],
+              [99, 15]
             ]
           },
           // decrease opacity to transition into the circle layer
           'heatmap-opacity': {
             default: 1,
             stops: [
-              [14, 1],
-              [15, 0]
+              [22, 1]
             ]
           },
         }
-      }, 'waterway-label');
+      });
 
       map.addLayer({
         id: 'donor',

@@ -69,8 +69,8 @@
             property: 'Planned_Giving_Bequest',
             type: 'exponential',
             stops: [
-              [1, 0],
-              [100, 1]
+              [87, 0],
+              [99, 1]
             ]
           },
           // increase intensity as zoom level increases
@@ -118,8 +118,8 @@
             'interpolate',
             ['linear'],
             ['get', 'Lifetime_Gift_Count'],
-            0, 3,
-            250, 10 
+            0, 5,
+            250, 15 
           ],
           'circle-color': [
             "step",
@@ -131,6 +131,15 @@
             "#1b9e77",
             85,
             "#e7298a"
+          ],
+          'circle-opacity': [
+            "step",
+            ["get", "Age"],
+            0,
+            0,
+            0,
+            55,
+            1
           ]
         }
       });

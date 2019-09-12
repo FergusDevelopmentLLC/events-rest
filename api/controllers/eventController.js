@@ -139,6 +139,12 @@ exports.getDonors = (req, res) => {
 
   let donorsCopy = Object.assign({}, donors)
 
+  for(f of donorsCopy.features) {
+    if(!f.properties.Age) f.properties.Age = 0
+    if(!f.properties.Planned_Giving_Bequest) f.properties.Planned_Giving_Bequest = 0
+    if(!f.properties.Lifetime_Gift_Count) f.properties.Lifetime_Gift_Count = 0
+  }
+
   res.json(donorsCopy)
 }
 

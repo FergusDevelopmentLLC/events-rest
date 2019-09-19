@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>Donors</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+    }
+
+    .filter-group {
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        font-weight: 600;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1;
+        border-radius: 3px;
+        width: 120px;
+        color: #fff;
+    }
+
+    .filter-group input[type=checkbox]:first-child+label {
+        border-radius: 3px 3px 0 0;
+    }
+
+    .filter-group label:last-child {
+        border-radius: 0 0 3px 3px;
+        border: none;
+    }
+
+    .filter-group input[type=checkbox] {
+        display: none;
+    }
+
+    .filter-group input[type=checkbox]+label {
+        background-color: #3386c0;
+        display: block;
+        cursor: pointer;
+        padding: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    .filter-group input[type=checkbox]+label {
+        background-color: #3386c0;
+        text-transform: capitalize;
+    }
+
+    .filter-group input[type=checkbox]+label:hover,
+    .filter-group input[type=checkbox]:checked+label {
+        background-color: #4ea0da;
+    }
+
+    .filter-group input[type=checkbox]:checked+label:before {
+        content: '✔';
+        margin-right: 5px;
+    }
+</style>
+</head>
+<body>
+  <style>
+    .mapboxgl-popup {
+      max-width: 500px;
+      font: 10px/14px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    }
+  </style>
+  <div id='map'></div>
+  <nav id='filter-group' class='filter-group'></nav>
+  <script>
+
+    // get bounding box: http://bboxfinder.com
+    let mapBounds = [-105.759888,38.621162,-103.573608,40.747257];//Southwest corner, Northeast corner
+
+    mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsbGNhcnRlciIsImEiOiJjamV4b2g3Z2ExOGF4MzFwN3R1dHJ3d2J4In0.Ti-hnuBH8W4bHn7k6GCpGw';
+
+    // let basemap = 'basic';
+    let basemap = 'streets';
+    // let basemap = 'bright';
+    // let basemap = 'light';
+    // let basemap = 'dark';
+    // let basemap = 'satellite';
+
+    let map = new mapboxgl.Map({
+      container: 'map',
+      style: `mapbox://styles/mapbox/${basemap}-v9`,
+      center: [(mapBounds[0] + mapBounds[2]) / 2, (mapBounds[1] + mapBounds[3]) / 2],
+      zoom: 9
+    });
+
+    var filterGroup = document.getElementById('filter-group');
+
+    let ageGroups = [
+        {
+            id: 'show0',
+            label: '0'
+        },
+        {
+            id: 'show1to54',
+            label: '1-54'
+        },
+        {
+            id: 'show55to90',
+            label: '55-90'
+        },
+        {
+            id: 'show91Plus',
+            label: '90+'
+        }
+    ]
+
+    
+
+    for (ageGroup of ageGroups) {
+        
+        var input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = ageGroup.id;
+        input.checked = true;
+        filterGroup.appendChild(input);
+        
+        var label = document.createElement('label');
+        label.setAttribute('for', ageGroup.id);
+        label.textContent = ageGroup.label;
+        filterGroup.appendChild(label);
+
+        input.addEventListener('change', function(e) {
+            
+            var filter = ["all"];
+
+            if(document.getElementById('show0').checked == false) {
+                filter.push(["!=", 'Age', 0])
+            }
+            if(document.getElementById('show1to54').checked  == false) {
+                filter.push([">=", 'Age', 54])
+            }
+            if(document.getElementById('show55to90').checked  == false) {
+                filter.push([">=", 'Age', 91])
+            }
+            if(document.getElementById('show91Plus').checked  == false) {
+                filter.push([">=", 'Age', 1000])
+            }
+            
+            if(filter.length > 0) map.setFilter('donor', filter);
+        });
+    }
+
+    map.on('load', function () {
+
+      map.addSource('donor', {
+        type: 'geojson',
+        data: `${getUrlPrefix()}/donors`
+      });
+
+      map.addLayer({
+        id: 'donor',
+        source: 'donor',
+        type: 'circle',
+        paint: {
+          'circle-radius': 5,
+          'circle-color': [
+            "step",
+            ["get", "Lifetime_Gift_Count"],
+            "purple",
+            0,"black",
+            5,"blue",
+            10,"green",
+            20,"yellow",
+            50,"orange",
+            101,"red",
+          ],
+          'circle-opacity': 1
+        }
+      });
+      
+      handlePopup();
+
+    });
+
+    const handlePopup = () => {
+
+      // Create a popup, but don't add it to the map yet.
+      let popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+
+      map.on('mouseenter', 'donor', (e) => {
+
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+
+        let tooltip_msg = '';
+        tooltip_msg += `<strong>${e.features[0].properties.Donor_Name}</strong><br/>`;
+        tooltip_msg += `Donor_Name: ${e.features[0].properties.Donor_Name}<br/>`
+        tooltip_msg += `Last_Name: ${e.features[0].properties.Last_Name}<br/>`
+        tooltip_msg += `Address_1: ${e.features[0].properties.Address_1}<br/>`
+        tooltip_msg += `Address_2: ${e.features[0].properties.Address_2}<br/>`
+        tooltip_msg += `City: ${e.features[0].properties.City}<br/>`
+        tooltip_msg += `State: ${e.features[0].properties.State}<br/>`
+        tooltip_msg += `Zip: ${e.features[0].properties.Zip}<br/>`
+        tooltip_msg += `County: ${e.features[0].properties.County}<br/>`
+        tooltip_msg += `Email: ${e.features[0].properties.Email}<br/>`
+        tooltip_msg += `Phone: ${e.features[0].properties.Phone}<br/>`
+        tooltip_msg += `Relationship_Manager: ${e.features[0].properties.Relationship_Manager}<br/>`
+        tooltip_msg += `Age: ${e.features[0].properties.Age}<br/>`
+        tooltip_msg += `Planned_Giving_Bequest: ${e.features[0].properties.Planned_Giving_Bequest}<br/>`
+        tooltip_msg += `First_Gift_Date: ${e.features[0].properties.First_Gift_Date}<br/>`
+        tooltip_msg += `First_Gift_Amount: ${e.features[0].properties.First_Gift_Amount}<br/>`
+        tooltip_msg += `Last_Gift_Date: ${e.features[0].properties.Last_Gift_Date}<br/>`
+        tooltip_msg += `Last_Gift_Amount: ${e.features[0].properties.Last_Gift_Amount}<br/>`
+        tooltip_msg += `Last_Gift_Fund_Desc: ${e.features[0].properties.Last_Gift_Fund_Desc}<br/>`
+        tooltip_msg += `Largest_Gift_Date: ${e.features[0].properties.Largest_Gift_Date}<br/>`
+        tooltip_msg += `Largest_Gift_Amount: ${e.features[0].properties.Largest_Gift_Amount}<br/>`
+        tooltip_msg += `Largest_Gift_Fund_Desc: ${e.features[0].properties.Largest_Gift_Fund_Desc}<br/>`
+        tooltip_msg += `Lifetime_Gift_Amount: ${e.features[0].properties.Lifetime_Gift_Amount}<br/>`
+        tooltip_msg += `Lifetime_Gift_Count: ${e.features[0].properties.Lifetime_Gift_Count}<br/>`
+        tooltip_msg += `Current_FY_Gift_Amount: ${e.features[0].properties.Current_FY_Gift_Amount}<br/>`
+        tooltip_msg += `Chapter_Name: ${e.features[0].properties.Chapter_Name}<br/>`
+
+        // Populate the popup and set its coordinates based on the feature found.
+        popup.setLngLat(e.lngLat)
+          .setHTML(tooltip_msg)
+          .addTo(map);
+      });
+
+      map.on('mouseleave', 'donor', function () {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+      });
+
+    }
+
+    const getUrlPrefix = () => {
+      let urlPrefix = 'http://104.236.16.91:8680' 
+
+      if (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+        urlPrefix = 'http://127.0.0.1:8680' 
+
+      console.log('urlPrefix', urlPrefix)
+      return urlPrefix
+    }
+
+  </script>
+</body>
+
+</html>

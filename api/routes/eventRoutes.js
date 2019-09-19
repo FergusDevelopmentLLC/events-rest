@@ -22,7 +22,7 @@ module.exports = (app) => {
   app.route('/mine_projects')
     .get(event.getMineProjects)
 
-  app.route('/donors')
+  app.route('/donors/:password')
     .get(event.getDonors)
     
 }

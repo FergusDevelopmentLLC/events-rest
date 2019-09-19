@@ -145,7 +145,7 @@
                 filter.push(["!=", 'Age', 0])
             }
             if(document.getElementById('show1to54').checked  == false) {
-                filter.push([">=", 'Age', 54])
+                filter.push([">=", 'Age', 55])
             }
             if(document.getElementById('show55to90').checked  == false) {
                 filter.push([">=", 'Age', 91])
@@ -160,9 +160,11 @@
 
     map.on('load', function () {
 
+      var password = prompt("Please enter password", "");
+
       map.addSource('donor', {
         type: 'geojson',
-        data: `${getUrlPrefix()}/donors`
+        data: `${getUrlPrefix()}/donors/${password}`
       });
 
       map.addLayer({

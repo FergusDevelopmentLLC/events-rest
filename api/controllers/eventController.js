@@ -3,6 +3,7 @@ const hikes = require('./data/summer2019hikes.json');
 const blm = require('./data/mine/blm10.json');
 const mines = require('./data/mine/NON_POINT_MINE_PROJECTS.json');
 const donors = require('./data/mine/donor201909.json');
+const pass = require('./data/password/password.json');
 
 exports.getEvents = (req, res) => {
 
@@ -133,9 +134,14 @@ exports.getMineProjects = (req, res) => {
 }
 
 exports.getDonors = (req, res) => {
-
+  
   res.header("Access-Control-Allow-Origin", "*")
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+
+  if(pass.password != req.params.password) {
+    res.json([])
+    return;
+  }
 
   let donorsCopy = Object.assign({}, donors)
 

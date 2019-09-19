@@ -80,6 +80,8 @@
   <nav id='filter-group' class='filter-group'></nav>
   <script>
 
+    
+
     // get bounding box: http://bboxfinder.com
     let mapBounds = [-105.759888,38.621162,-103.573608,40.747257];//Southwest corner, Northeast corner
 
@@ -98,7 +100,7 @@
       center: [(mapBounds[0] + mapBounds[2]) / 2, (mapBounds[1] + mapBounds[3]) / 2],
       zoom: 9
     });
-
+    
     var filterGroup = document.getElementById('filter-group');
 
     let ageGroups = [
@@ -189,18 +191,9 @@
     });
 
     const handlePopup = () => {
-
-      // Create a popup, but don't add it to the map yet.
-      let popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false
-      });
-
-      map.on('mouseenter', 'donor', (e) => {
-
-        // Change the cursor style as a UI indicator.
-        map.getCanvas().style.cursor = 'pointer';
-
+        
+        map.on('click', 'donor', (e) => {
+        
         let tooltip_msg = '';
         tooltip_msg += `<strong>${e.features[0].properties.Donor_Name}</strong><br/>`;
         tooltip_msg += `Donor_Name: ${e.features[0].properties.Donor_Name}<br/>`
@@ -229,15 +222,16 @@
         tooltip_msg += `Current_FY_Gift_Amount: ${e.features[0].properties.Current_FY_Gift_Amount}<br/>`
         tooltip_msg += `Chapter_Name: ${e.features[0].properties.Chapter_Name}<br/>`
 
-        // Populate the popup and set its coordinates based on the feature found.
-        popup.setLngLat(e.lngLat)
-          .setHTML(tooltip_msg)
-          .addTo(map);
+        new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(tooltip_msg)
+            .addTo(map);
       });
-
+      map.on('mouseenter', 'donor', function () {
+        map.getCanvas().style.cursor = 'pointer';
+      });
       map.on('mouseleave', 'donor', function () {
         map.getCanvas().style.cursor = '';
-        popup.remove();
       });
 
     }

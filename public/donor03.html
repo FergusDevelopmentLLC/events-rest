@@ -265,8 +265,7 @@
 
     map.on('load', async () => {
 
-      //var password = prompt("Please enter password", "");
-      var password = 'sopranos123'
+      var password = prompt("Please enter password", "");
       let data = await getData(password);
 
       if (data.length == 0) return

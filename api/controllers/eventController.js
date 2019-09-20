@@ -143,6 +143,9 @@ exports.getDonors = (req, res) => {
     return;
   }
 
+  res.json([])
+  return;
+
   let donorsCopy = Object.assign({}, donors)
 
   for(f of donorsCopy.features) {

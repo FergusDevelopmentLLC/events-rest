@@ -9,67 +9,107 @@
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
   <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js'></script>
   <style>
-      body {
-          margin: 0;
-          padding: 0;
-      }
+    body {
+      margin: 0;
+      padding: 0;
+    }
 
-      #map {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          width: 100%;
-      }
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
 
-      .filter-group {
-          font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-          font-weight: 600;
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          z-index: 1;
-          border-radius: 3px;
-          width: 120px;
-          color: #fff;
-      }
+    .filter-group-title {
+      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      font-weight: 600;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      width: 100px;
+      color: #fff;
+      background-color: #3386c0;
+      padding: 10px;
+    }
 
-      .filter-group input[type=checkbox]:first-child+label {
-          border-radius: 3px 3px 0 0;
-      }
+    .filter-group {
+      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      font-weight: 600;
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      z-index: 1;
+      width: 120px;
+      color: #fff;
+    }
 
-      .filter-group label:last-child {
-          border-radius: 0 0 3px 3px;
-          border: none;
-      }
+    .filter-group input[type=checkbox]:first-child+label {
+      /* border-radius: 3px 3px 0 0; */
+    }
 
-      .filter-group input[type=checkbox] {
-          display: none;
-      }
+    .filter-group label:last-child {
+      /* border-radius: 0 0 3px 3px; */
+      border: none;
+    }
 
-      .filter-group input[type=checkbox]+label {
-          background-color: #3386c0;
-          display: block;
-          cursor: pointer;
-          padding: 10px;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.25);
-      }
+    .filter-group input[type=checkbox] {
+      display: none;
+    }
 
-      .filter-group input[type=checkbox]+label {
-          background-color: #3386c0;
-          text-transform: capitalize;
-      }
+    .filter-group input[type=checkbox]+label {
+      background-color: #3386c0;
+      display: block;
+      cursor: pointer;
+      padding: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    }
 
-      .filter-group input[type=checkbox]+label:hover,
-      .filter-group input[type=checkbox]:checked+label {
-          background-color: #4ea0da;
-      }
+    .filter-group input[type=checkbox]+label {
+      background-color: #3386c0;
+      text-transform: capitalize;
+    }
 
-      .filter-group input[type=checkbox]:checked+label:before {
-          content: '✔';
-          margin-right: 5px;
-      }
+    .filter-group input[type=checkbox]+label:hover,
+    .filter-group input[type=checkbox]:checked+label {
+      background-color: #4ea0da;
+    }
+
+    .filter-group input[type=checkbox]:checked+label:before {
+      content: '✔';
+      margin-right: 5px;
+    }
+
+
+    .legend {
+      background-color: #e9e9e9;
+      border-radius: 3px;
+      bottom: 30px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
+      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      padding: 10px;
+      position: absolute;
+      right: 10px;
+      z-index: 1;
+      width: 100px;
+      border: 1px solid #9c9c9c;
+    }
+
+    .legend h4 {
+      margin: 0 0 10px;
+    }
+
+    .legend div span {
+      border-radius: 50%;
+      display: inline-block;
+      height: 10px;
+      margin-right: 5px;
+      width: 10px;
+    }
   </style>
 </head>
+
 <body>
   <style>
     .mapboxgl-popup {
@@ -77,79 +117,161 @@
       font: 10px/14px 'Helvetica Neue', Arial, Helvetica, sans-serif;
     }
   </style>
+  <script>
+    
+    const colors01 = [
+      {
+        'color': 'black',
+        'label': '0'
+      },
+      {
+        'color': 'blue',
+        'label': '5+'
+      },
+      {
+        'color': 'green',
+        'label': '10+'
+      },
+      {
+        'color': '#f9d62f',
+        'label': '20+'
+      },
+      {
+        'color': 'orange',
+        'label': '50+'
+      },
+      {
+        'color': 'red',
+        'label': '100+'
+      }
+    ]
+
+    const colors02 = [
+      {
+        'color': '#fcc5c0',
+        'label': '0'
+      },
+      {
+        'color': '#fa9fb5',
+        'label': '5+'
+      },
+      {
+        'color': '#f768a1',
+        'label': '10+'
+      },
+      {
+        'color': '#dd3497',
+        'label': '20+'
+      },
+      {
+        'color': '#ae017e',
+        'label': '50+'
+      },
+      {
+        'color': '#7a0177',
+        'label': '100+'
+      }
+    ]
+    
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    let colors = colors01;
+    if(getUrlParameter('g')) {
+      colors = colors02;
+    }
+    
+
+  </script>
+
+  <div id='lifetime-gifts-legend' class='legend'>
+    <h4>Lifetime Gifts</h4>
+  </div>
+
   <div id='map'></div>
+  <div class='filter-group-title' id='filter-group-title' style='display: none'>Age:</div>
   <nav id='filter-group' class='filter-group'></nav>
   <script>
 
-    
+    var legend = document.getElementById('lifetime-gifts-legend')
+    for(c in colors) {
+      var div = document.createElement('div');
+      var span = document.createElement('span');
+      span.setAttribute('style', 'background-color: ' + colors[c].color)
+      div.appendChild(span)
+      div.innerHTML = div.innerHTML + colors[c].label
+      legend.appendChild(div)
+    }
 
     // get bounding box: http://bboxfinder.com
-    let mapBounds = [-105.759888,38.621162,-103.573608,40.747257];//Southwest corner, Northeast corner
+    const mapBounds = [-105.759888, 38.621162, -103.573608, 40.747257];//Southwest corner, Northeast corner
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsbGNhcnRlciIsImEiOiJjamV4b2g3Z2ExOGF4MzFwN3R1dHJ3d2J4In0.Ti-hnuBH8W4bHn7k6GCpGw';
 
-    // let basemap = 'basic';
-    let basemap = 'streets';
-    // let basemap = 'bright';
-    // let basemap = 'light';
-    // let basemap = 'dark';
-    // let basemap = 'satellite';
+    // const basemap = 'basic';
+    const basemap = 'streets';
+    // const basemap = 'bright';
+    // const basemap = 'light';
+    // const basemap = 'dark';
+    // const basemap = 'satellite';
 
-    let map = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       container: 'map',
       style: `mapbox://styles/mapbox/${basemap}-v9`,
       center: [(mapBounds[0] + mapBounds[2]) / 2, (mapBounds[1] + mapBounds[3]) / 2],
       zoom: 9
-    });
-    
-    var filterGroup = document.getElementById('filter-group');
-
-    let ageGroups = [
-        {
-            id: 'show0',
-            label: '0'
-        },
-        {
-            id: 'show1to54',
-            label: '1-54'
-        },
-        {
-            id: 'show55to90',
-            label: '55-90'
-        },
-        {
-            id: 'show91Plus',
-            label: '90+'
-        }
-    ]
-
-    const getData = async (password) => {
-      const response = await axios.get(`${getUrlPrefix()}/donors/${password}`);
-      return response.data
-    }
+    })
 
     const paint = {
-                    'circle-radius': 5,
-                    'circle-color': [
-                      "step",
-                      ["get", "Lifetime_Gift_Count"],
-                      "purple",
-                      0,"black",
-                      5,"blue",
-                      10,"green",
-                      20,"yellow",
-                      50,"orange",
-                      101,"red",
-                    ],
-                    'circle-opacity': 1
-                  }
+      'circle-radius': 5,
+      'circle-color': [
+        "step",
+        ["get", "Lifetime_Gift_Count"],
+        "purple",
+        0, colors[0].color,
+        5, colors[1].color,
+        10, colors[2].color,
+        20, colors[3].color,
+        50, colors[4].color,
+        100, colors[5].color,
+      ],
+      'circle-opacity': 1
+    }
+
+    const ageGroups = [
+      {
+        id: 'show0',
+        label: 'Unknown'
+      },
+      {
+        id: 'show1to54',
+        label: 'Less than 55'
+      },
+      {
+        id: 'show55to90',
+        label: '55 to 90'
+      },
+      {
+        id: 'show91Plus',
+        label: '90+'
+      }
+    ]
+
+    var filterGroup = document.getElementById('filter-group')
 
     map.on('load', async () => {
-      
-      var password = prompt("Please enter password", "");
+
+      //var password = prompt("Please enter password", "");
+      var password = 'sopranos123'
       let data = await getData(password);
 
-      if(data.length == 0) return
+      if (data.length == 0) return
+
+      document.getElementById('filter-group-title').style.display = 'block';
 
       const bucketAge0 = Object.assign({}, data)
       bucketAge0.features = []
@@ -163,11 +285,11 @@
       const bucketAge90Plus = Object.assign({}, data)
       bucketAge90Plus.features = []
 
-      for(donor of data.features) {
-        if(donor.properties.Age == 0) bucketAge0.features.push(donor)
-        if(donor.properties.Age >= 1 && donor.properties.Age <= 54) bucketAge1to54.features.push(donor)
-        if(donor.properties.Age >= 55 && donor.properties.Age <= 90) bucketAge55to90.features.push(donor)
-        if(donor.properties.Age >= 90) bucketAge90Plus.features.push(donor)
+      for (donor of data.features) {
+        if (donor.properties.Age == 0) bucketAge0.features.push(donor)
+        if (donor.properties.Age >= 1 && donor.properties.Age <= 54) bucketAge1to54.features.push(donor)
+        if (donor.properties.Age >= 55 && donor.properties.Age <= 90) bucketAge55to90.features.push(donor)
+        if (donor.properties.Age >= 90) bucketAge90Plus.features.push(donor)
       }
 
       addDonorLayer('bucketAge0', bucketAge0, paint)
@@ -183,45 +305,45 @@
       handlePopup('bucketAge90Plus');
 
       for (ageGroup of ageGroups) {
-        
+
         var input = document.createElement('input');
         input.type = 'checkbox';
         input.id = ageGroup.id;
         input.checked = true;
         filterGroup.appendChild(input);
-        
+
         var label = document.createElement('label');
         label.setAttribute('for', ageGroup.id);
         label.textContent = ageGroup.label;
         filterGroup.appendChild(label);
 
-        input.addEventListener('change', function(e) {
+        input.addEventListener('change', function (e) {
 
-          if(document.getElementById('show0').checked) {
+          if (document.getElementById('show0').checked) {
             if (map.getLayer('bucketAge0')) map.setLayoutProperty('bucketAge0', 'visibility', 'visible')
           }
           else if (document.getElementById('show0').checked == false) {
             if (map.getLayer('bucketAge0')) map.setLayoutProperty('bucketAge0', 'visibility', 'none')
           }
 
-          if(document.getElementById('show1to54').checked) {
+          if (document.getElementById('show1to54').checked) {
             if (map.getLayer('bucketAge1to54')) map.setLayoutProperty('bucketAge1to54', 'visibility', 'visible')
           }
-          else if(document.getElementById('show1to54').checked == false) {
+          else if (document.getElementById('show1to54').checked == false) {
             if (map.getLayer('bucketAge1to54')) map.setLayoutProperty('bucketAge1to54', 'visibility', 'none')
           }
 
-          if(document.getElementById('show55to90').checked) {
+          if (document.getElementById('show55to90').checked) {
             if (map.getLayer('bucketAge55to90')) map.setLayoutProperty('bucketAge55to90', 'visibility', 'visible')
           }
-          else if(document.getElementById('show55to90').checked == false) {
+          else if (document.getElementById('show55to90').checked == false) {
             if (map.getLayer('bucketAge55to90')) map.setLayoutProperty('bucketAge55to90', 'visibility', 'none')
           }
 
-          if(document.getElementById('show91Plus').checked) {
+          if (document.getElementById('show91Plus').checked) {
             if (map.getLayer('bucketAge90Plus')) map.setLayoutProperty('bucketAge90Plus', 'visibility', 'visible')
           }
-          else if(document.getElementById('show91Plus').checked == false) {
+          else if (document.getElementById('show91Plus').checked == false) {
             if (map.getLayer('bucketAge90Plus')) map.setLayoutProperty('bucketAge90Plus', 'visibility', 'none')
           }
 
@@ -229,6 +351,21 @@
       }
 
     });
+
+    const getUrlPrefix = () => {
+      let urlPrefix = 'http://104.236.16.91:8680'
+
+      if (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+        urlPrefix = 'http://127.0.0.1:8680'
+
+      console.log('urlPrefix', urlPrefix)
+      return urlPrefix
+    }
+
+    const getData = async (password) => {
+      const response = await axios.get(`${getUrlPrefix()}/donors/${password}`);
+      return response.data
+    }
 
     const addDonorLayer = (id, data, paintObject) => {
       map.addLayer({
@@ -243,63 +380,30 @@
     }
 
     const handlePopup = (layerId) => {
-        
-        map.on('click', layerId, (e) => {
-        
-          let tooltip_msg = '';
-          tooltip_msg += `<strong>${e.features[0].properties.Donor_Name}</strong><br/>`;
-          tooltip_msg += `Donor_Name: ${e.features[0].properties.Donor_Name}<br/>`
-          tooltip_msg += `Last_Name: ${e.features[0].properties.Last_Name}<br/>`
-          tooltip_msg += `Address_1: ${e.features[0].properties.Address_1}<br/>`
-          tooltip_msg += `Address_2: ${e.features[0].properties.Address_2}<br/>`
-          tooltip_msg += `City: ${e.features[0].properties.City}<br/>`
-          tooltip_msg += `State: ${e.features[0].properties.State}<br/>`
-          tooltip_msg += `Zip: ${e.features[0].properties.Zip}<br/>`
-          tooltip_msg += `County: ${e.features[0].properties.County}<br/>`
-          tooltip_msg += `Email: ${e.features[0].properties.Email}<br/>`
-          tooltip_msg += `Phone: ${e.features[0].properties.Phone}<br/>`
-          tooltip_msg += `Relationship_Manager: ${e.features[0].properties.Relationship_Manager}<br/>`
-          tooltip_msg += `Age: ${e.features[0].properties.Age}<br/>`
-          tooltip_msg += `Planned_Giving_Bequest: ${e.features[0].properties.Planned_Giving_Bequest}<br/>`
-          tooltip_msg += `First_Gift_Date: ${e.features[0].properties.First_Gift_Date}<br/>`
-          tooltip_msg += `First_Gift_Amount: ${e.features[0].properties.First_Gift_Amount}<br/>`
-          tooltip_msg += `Last_Gift_Date: ${e.features[0].properties.Last_Gift_Date}<br/>`
-          tooltip_msg += `Last_Gift_Amount: ${e.features[0].properties.Last_Gift_Amount}<br/>`
-          tooltip_msg += `Last_Gift_Fund_Desc: ${e.features[0].properties.Last_Gift_Fund_Desc}<br/>`
-          tooltip_msg += `Largest_Gift_Date: ${e.features[0].properties.Largest_Gift_Date}<br/>`
-          tooltip_msg += `Largest_Gift_Amount: ${e.features[0].properties.Largest_Gift_Amount}<br/>`
-          tooltip_msg += `Largest_Gift_Fund_Desc: ${e.features[0].properties.Largest_Gift_Fund_Desc}<br/>`
-          tooltip_msg += `Lifetime_Gift_Amount: ${e.features[0].properties.Lifetime_Gift_Amount}<br/>`
-          tooltip_msg += `Lifetime_Gift_Count: ${e.features[0].properties.Lifetime_Gift_Count}<br/>`
-          tooltip_msg += `Current_FY_Gift_Amount: ${e.features[0].properties.Current_FY_Gift_Amount}<br/>`
-          tooltip_msg += `Chapter_Name: ${e.features[0].properties.Chapter_Name}<br/>`
 
-          new mapboxgl.Popup()
-              .setLngLat(e.lngLat)
-              .setHTML(tooltip_msg)
-              .addTo(map);
-        });
+      map.on('click', layerId, (e) => {
 
-        map.on('mouseenter', layerId, (e) => {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-        
-        map.on('mouseleave', layerId, (e) => {
-          map.getCanvas().style.cursor = '';
-        });
+        let tooltip_msg = '';
+        tooltip_msg += `<strong>${e.features[0].properties.Donor_Name}</strong><br/>`
+        for(prop in e.features[0].properties) {
+          tooltip_msg += `${prop}: ${e.features[0].properties[prop]}<br/>`
+        }
+
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(tooltip_msg)
+          .addTo(map);
+      });
+
+      map.on('mouseenter', layerId, (e) => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.on('mouseleave', layerId, (e) => {
+        map.getCanvas().style.cursor = '';
+      });
 
     }
-
-    const getUrlPrefix = () => {
-      let urlPrefix = 'http://104.236.16.91:8680' 
-
-      if (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-        urlPrefix = 'http://127.0.0.1:8680' 
-
-      console.log('urlPrefix', urlPrefix)
-      return urlPrefix
-    }
-
   </script>
 </body>
 

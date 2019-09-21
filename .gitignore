@@ -9,6 +9,9 @@
 /api/controllers/data
 \api\controllers\data
 
+/public/data
+\public\data
+
 # misc
 .DS_Store
 .env.local

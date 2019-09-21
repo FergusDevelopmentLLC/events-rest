@@ -143,8 +143,8 @@ exports.getDonors = (req, res) => {
     return;
   }
 
-  //res.json([])
-  //return;
+  res.json([])
+  return;
 
   let donorsCopy = Object.assign({}, donors)
 

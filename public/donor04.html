@@ -26,7 +26,7 @@
       font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
       font-weight: 600;
       position: absolute;
-      top: 210px;
+      top: 160px;
       right: 10px;
       z-index: 2;
       width: 100px;
@@ -39,7 +39,7 @@
       font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
       font-weight: 600;
       position: absolute;
-      top: 250px;
+      top: 200px;
       right: 10px;
       z-index: 1;
       width: 120px;
@@ -255,7 +255,7 @@
       container: 'map',
       style: `mapbox://styles/mapbox/${basemap}-v9`,
       center: [(mapBounds[0] + mapBounds[2]) / 2, (mapBounds[1] + mapBounds[3]) / 2],
-      zoom: 6.8
+      zoom: 6.23
     })
 
     map.addControl(new mapboxgl.NavigationControl())
@@ -465,7 +465,13 @@
         let tooltip_msg = '';
         tooltip_msg += `<strong>${e.features[0].properties.donor_name}</strong><br/>`
         for (prop in e.features[0].properties) {
-          if(prop != 'longitude' && prop != 'latitude') {
+          if(prop != 'longitude' 
+              && prop != 'latitude' 
+              &&  prop != 'county' 
+              &&  prop != 'largest_gift_fund_desc' 
+              &&  prop != 'largest_gift_amount'
+              &&  prop != 'largest_gift_date'
+            ) {
             tooltip_msg += `${prop}: ${e.features[0].properties[prop]}<br/>`
           }
         }

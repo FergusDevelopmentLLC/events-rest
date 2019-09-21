@@ -230,7 +230,7 @@
       'circle-radius': 5,
       'circle-color': [
         "step",
-        ["get", "Lifetime_Gift_Count"],
+        ["get", "lifetime_gift_count"],
         "purple",
         0, colors[0].color,
         5, colors[1].color,
@@ -285,10 +285,10 @@
       bucketAge90Plus.features = []
 
       for (donor of data.features) {
-        if (donor.properties.Age == 0) bucketAge0.features.push(donor)
-        if (donor.properties.Age >= 1 && donor.properties.Age <= 54) bucketAge1to54.features.push(donor)
-        if (donor.properties.Age >= 55 && donor.properties.Age <= 90) bucketAge55to90.features.push(donor)
-        if (donor.properties.Age >= 90) bucketAge90Plus.features.push(donor)
+        if (donor.properties.age == 0) bucketAge0.features.push(donor)
+        if (donor.properties.age >= 1 && donor.properties.age <= 54) bucketAge1to54.features.push(donor)
+        if (donor.properties.age >= 55 && donor.properties.age <= 90) bucketAge55to90.features.push(donor)
+        if (donor.properties.age >= 90) bucketAge90Plus.features.push(donor)
       }
 
       addDonorLayer('bucketAge0', bucketAge0, paint)
@@ -383,7 +383,7 @@
       map.on('click', layerId, (e) => {
 
         let tooltip_msg = '';
-        tooltip_msg += `<strong>${e.features[0].properties.Donor_Name}</strong><br/>`
+        tooltip_msg += `<strong>${e.features[0].properties.donor_name}</strong><br/>`
         for(prop in e.features[0].properties) {
           tooltip_msg += `${prop}: ${e.features[0].properties[prop]}<br/>`
         }

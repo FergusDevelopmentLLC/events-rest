@@ -2,7 +2,7 @@ const events = require('./data/mcdonalds.json');
 const hikes = require('./data/summer2019hikes.json');
 const blm = require('./data/mine/blm10.json');
 const mines = require('./data/mine/NON_POINT_MINE_PROJECTS.json');
-const donors = require('./data/mine/donor201909.json');
+const donors = require('./data/mine/donor201919.json');
 const pass = require('./data/password/password.json');
 
 exports.getEvents = (req, res) => {
@@ -143,15 +143,19 @@ exports.getDonors = (req, res) => {
     return;
   }
 
-  res.json([])
-  return;
+  //res.json([])
+  //return;
 
   let donorsCopy = Object.assign({}, donors)
 
   for(f of donorsCopy.features) {
-    if(!f.properties.Age) f.properties.Age = 0
-    if(!f.properties.Planned_Giving_Bequest) f.properties.Planned_Giving_Bequest = 0
-    if(!f.properties.Lifetime_Gift_Count) f.properties.Lifetime_Gift_Count = 0
+    
+    if(!f.properties.age) f.properties.age = 0
+    if(!f.properties.planned_giving_bequest) f.properties.planned_giving_bequest = 0
+    if(!f.properties.lifetime_gift_count) f.properties.lifetime_gift_count = 0
+    
+    f.properties.lifetime_gift_count = parseInt(f.properties.lifetime_gift_count)
+    f.properties.planned_giving_bequest = parseInt(f.properties.planned_giving_bequest)
   }
 
   // let copy = []
